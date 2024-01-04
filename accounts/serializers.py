@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from .models import *
 from rest_framework import serializers
+from django.contrib.auth import authenticate
 
 class CustomUserListSerializer(ModelSerializer):
     class Meta:
@@ -18,7 +19,6 @@ class CustomUserRegistrationCreateSerializer(ModelSerializer):
     def validate(self, data):
         if data["password"] != data["password2"]:
             raise Exception("Passwords do not match.")
-        
         return data
 
     def create(self, validated_data):
@@ -29,5 +29,27 @@ class CustomUserRegistrationCreateSerializer(ModelSerializer):
         return user
     
 
-class CustomUserLoginCreateSerializer(ModelSerializer):
-    pass
+
+class CustomUserLoginSerializer(ModelSerializer):
+    email = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    class Meta:
+        fields = ['email', 'password'] 
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        if email and password:
+
+            user = authenticate(email=email, password=password)
+            
+            if user:
+                if user.is_active:
+                    data['user'] = user
+                    return data
+                else:
+                    raise serializers.ValidationError('The user account has been disabled.')
+            else:
+                raise serializers.ValidationError('Invalid username or password!')
+        else:
+            raise serializers.ValidationError('You must provide a username and password!')
