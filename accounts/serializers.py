@@ -31,18 +31,16 @@ class CustomUserRegistrationCreateSerializer(ModelSerializer):
 
 
 class CustomUserLoginSerializer(ModelSerializer):
-    email = serializers.CharField(write_only=True)
+    email = serializers.EmailField(write_only=True)
     password = serializers.CharField(write_only=True)
     class Meta:
-        fields = ['email', 'password'] 
+        model = CustomUser
+        fields = ['email', 'password']   
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
-
         if email and password:
-
             user = authenticate(email=email, password=password)
-            
             if user:
                 if user.is_active:
                     data['user'] = user

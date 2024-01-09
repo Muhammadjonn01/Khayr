@@ -20,16 +20,16 @@ class CustomUserListView(ListAPIView):
 
 class CustomUserLoginView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = CustomUserLoginSerializer
     def post(self, request):
         serializer = CustomUserLoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)  
 
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
-
-        user = authenticate(email=email, password=password)  
-        if user: 
-            if user.is_active:  
+ 
+        if authenticate(email=email, password=password): 
+            if authenticate(email=email, password=password).is_active:  
                 return Response({'detail': 'Login successful!'}, status=status.HTTP_200_OK)
             else:
                 return Response({'detail': 'The user account has been disabled.'}, status=status.HTTP_400_BAD_REQUEST)
