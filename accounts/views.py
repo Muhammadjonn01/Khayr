@@ -27,9 +27,11 @@ class CustomUserLoginView(APIView):
 
         email = serializer.validated_data['email']
         password = serializer.validated_data['password']
- 
-        if authenticate(email=email, password=password): 
-            if authenticate(email=email, password=password).is_active:  
+        
+        user = authenticate(email=email, password=password)
+        if user and user.is_active: 
+            if not user.is_active:
+                
                 return Response({'detail': 'Login successful!'}, status=status.HTTP_200_OK)
             else:
                 return Response({'detail': 'The user account has been disabled.'}, status=status.HTTP_400_BAD_REQUEST)
