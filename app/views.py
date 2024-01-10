@@ -2,20 +2,19 @@ from .serializers import *
 from .models import *
 from rest_framework.generics import *
 from rest_framework.permissions import * 
-from rest_framework.response import Response
-from rest_framework import status
+from .permissions import*
 
 #This view show list of donations
 class DonationListView(ListAPIView):
     queryset = Donation.objects.all()
     serializer_class = DonationListSerializer
-    # permission_classes =[IsAuthor,IsAdminUser]
+    permission_classes =[IsAuthor,IsAdminUser]
     
 #This view create donation
 class DonationCreateView(CreateAPIView):
     queryset = Donation.objects.all()
     serializer_class = DonationCreateSerializer
-    # permission_classes = [IsAuthor]
+    permission_classes = [IsAuthor]
 
 #This view show list of getdonations
 class GetDonationListView(ListAPIView):
